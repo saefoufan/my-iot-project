@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطوية إنترنت الأشياء والحوسبة المتضمنة الذكية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #0f172a;
+            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
+                              url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            color: #f8fafc;
+            scroll-behavior: smooth;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .brochure-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+        @media (max-width: 768px) {
+            .brochure-container { grid-template-columns: 1fr; }
+        }
+        .panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        .panel:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        .header-section {
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.9) 0%, rgba(29, 78, 216, 0.9) 100%);
+            color: white; padding: 2rem 1rem; text-align: center;
+        }
+        .content-section { padding: 1.5rem; flex-grow: 1; }
+        .icon-circle {
+            width: 60px; height: 60px; background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1rem; color: white; font-size: 1.5rem;
+        }
+        .badge {
+            display: inline-block; background: #1e3a8a; color: #93c5fd;
+            padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem;
+            font-weight: bold; margin-bottom: 0.5rem; margin-top: 1rem;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .item-card {
+            position: relative; display: flex; flex-direction: column; gap: 0.5rem;
+            margin-bottom: 1rem; padding: 1rem; border-radius: 10px;
+            background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.05);
+            text-decoration: none; color: #cbd5e1; transition: all 0.2s ease;
+        }
+        .item-card:hover { background: rgba(30, 41, 59, 0.9); border-color: #3b82f6; color: white; }
+
+        .live-preview {
+            visibility: hidden; opacity: 0; width: 320px; height: 220px;
+            background: white; border: 2px solid #3b82f6; border-radius: 12px;
+            position: absolute; z-index: 1000; bottom: 105%; right: 0;
+            transition: opacity 0.3s ease; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            overflow: hidden; pointer-events: none;
+        }
+        .item-card:hover .live-preview { visibility: visible; opacity: 1; }
+        .live-preview iframe { width: 200%; height: 200%; border: none; transform: scale(0.5); transform-origin: 0 0; }
+
+        /* --- Chatbot Enhanced Style --- */
+        #chatbot-widget {
+            position: fixed; bottom: 25px; left: 25px; z-index: 1000;
+        }
+
+        .chat-btn-toggle {
+            width: 65px; height: 65px;
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            border-radius: 50% 50% 50% 10%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.5);
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: floatBot 3s ease-in-out infinite;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        @keyframes floatBot {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        .chat-btn-toggle:hover { transform: scale(1.1); }
+
+        #chatbot-window {
+            width: 350px; height: 480px;
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 24px;
+            display: none; flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            margin-bottom: 15px; overflow: hidden;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .chat-header {
+            background: linear-gradient(to right, #2563eb, #4f46e5);
+            color: white; padding: 1.2rem; display: flex; justify-content: space-between; align-items: center;
+        }
+        .chat-messages { flex: 1; padding: 1.2rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem; background: rgba(0,0,0,0.05); }
+        .message { max-width: 85%; padding: 0.8rem 1rem; border-radius: 18px; font-size: 0.9rem; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .bot-msg { background: #1e293b; color: #f1f5f9; align-self: flex-start; border-bottom-right-radius: 4px; border-left: 3px solid #3b82f6; }
+        .user-msg { background: #2563eb; color: white; align-self: flex-end; border-bottom-left-radius: 4px; }
+        
+        .chat-input-area { padding: 1rem; background: rgba(30, 41, 59, 0.8); border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 0.5rem; }
+        .chat-input-area input { flex: 1; background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 0.6rem 1rem; color: white; outline: none; }
+        .chat-input-area input:focus { border-color: #3b82f6; }
+
+        .loading-dots { display: flex; gap: 4px; padding: 5px; }
+        .loading-dots span { width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; animation: blink 1.4s infinite both; }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <header class="bg-slate-900/90 backdrop-blur-md py-4 px-6 border-b-4 border-blue-500 sticky top-0 z-[100]">
+        <div class="max-w-[1200px] mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2 rounded-lg shadow-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white">نيكسوس الأشياء الذكية</h1>
+                    <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">إصدار 2026 التقني</span>
+                </div>
+            </div>
+            <div class="hidden md:block text-sm text-gray-400 font-medium italic">بوابة المستقبل المتصل | الشعبة 3</div>
+        </div>
+    </header>
+
+    <div class="text-center mt-12 px-4">
+        <h1 class="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">دليل تقنيات إنترنت الأشياء 2026</h1>
+        <p class="text-blue-300 mt-3 text-lg max-w-2xl mx-auto">استكشف النظام البيئي الرقمي وتعلم كيف تجعل الأشياء تتحدث لغة البيانات 🌐</p>
+    </div>
+
+    <div class="brochure-container relative z-10">
+        <!-- المتحكمات الذكية -->
+        <div class="panel">
+            <div class="header-section"><div class="icon-circle">🧩</div><h2 class="text-xl">المتحكمات الذكية</h2></div>
+            <div class="content-section">
+                <div class="badge">اللوحات التطويرية</div>
+                <a href="https://ar.m.wikipedia.org/wiki/%D8%A3%D8%B1%D8%AF%D9%88%D9%8A%D9%86%D9%88" target="_blank" class="item-card" onmouseenter="startPreview(this, 'https://ar.m.wikipedia.org/wiki/%D8%A3%D8%B1%D8%AF%D9%88%D9%8A%D9%86%D9%88')" onmouseleave="stopPreview(this)">
+                    <div class="flex items-center gap-3"><h3 class="text-sm font-bold text-white">Arduino Uno R4</h3></div>
+                    <p class="text-xs text-gray-300">الجيل المتطور بمعالج 32-بت أسرع ومصفوفة LED مدمجة.</p>
+                    <div class="live-preview"></div>
+                </a>
+                <a href="https://ar.m.wikipedia.org/wiki/%D8%A5%D9%8A-%D8%A5%D8%B3-%D8%A8%D9%8A-32" target="_blank" class="item-card" onmouseenter="startPreview(this, 'https://ar.m.wikipedia.org/wiki/%D8%A5%D9%8A-%D8%A5%D8%B3-%D8%A8%D9%8A-32')" onmouseleave="stopPreview(this)">
+                    <div class="flex items-center gap-3"><h3 class="text-sm font-bold text-white">ESP32-S3</h3></div>
+                    <p class="text-xs text-gray-300">الخيار الاحترافي للربط السحابي والذكاء الاصطناعي على الحافة.</p>
+                    <div class="live-preview"></div>
+                </a>
+            </div>
+        </div>
+
+        <!-- واجهات العرض -->
+        <div class="panel">
+            <div class="header-section"><div class="icon-circle">📊</div><h2 class="text-xl">واجهات العرض</h2></div>
+            <div class="content-section">
+                <div class="badge">المخرجات البصرية</div>
+                <a href="https://ar.m.wikipedia.org/wiki/%D8%B4%D8%A7%D8%B4%D8%A9_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D8%B3%D8%AA%D8%A7%D9%84_%D8%A7%D9%84%D8%B3%D8%A7%D8%A6%D9%84" target="_blank" class="item-card" onmouseenter="startPreview(this, 'https://ar.m.wikipedia.org/wiki/%D8%B4%D8%A7%D8%B4%D8%A9_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D8%B3%D8%AA%D8%A7%D9%84_%D8%A7%D9%84%D8%B3%D8%A7%D8%A6%D9%84')" onmouseleave="stopPreview(this)">
+                    <div class="flex items-center gap-3"><h3 class="text-sm font-bold text-white">شاشة LCD I2C</h3></div>
+                    <p class="text-xs text-gray-300">الوسيلة الكلاسيكية الموثوقة لعرض البيانات بأقل عدد من الأسلاك.</p>
+                    <div class="live-preview"></div>
+                </a>
+                <a href="https://ar.m.wikipedia.org/wiki/%D8%AB%D9%86%D8%A7%D8%A6%D9%8A_%D8%A8%D8%A7%D8%B9%D8%AB_%D9%84%D9%84%D8%B6%D9%88%D8%A1_%D8%B9%D8%B6%D9%88%D9%8A" target="_blank" class="item-card" onmouseenter="startPreview(this, 'https://ar.m.wikipedia.org/wiki/%D8%AB%D9%86%D8%A7%D8%A6%D9%8A_%D8%A8%D8%A7%D8%B9%D8%AB_%D9%84%D9%84%D8%B6%D9%88%D8%A1_%D8%B9%D8%B6%D9%88%D9%8A')" onmouseleave="stopPreview(this)">
+                    <div class="flex items-center gap-3"><h3 class="text-sm font-bold text-white">شاشة OLED</h3></div>
+                    <p class="text-xs text-gray-300">تباين عالي ووضوح فائق، مثالية للأجهزة القابلة للارتداء.</p>
+                    <div class="live-preview"></div>
+                </a>
+            </div>
+        </div>
+
+        <!-- السحابة والربط -->
+        <div class="panel">
+            <div class="header-section"><div class="icon-circle">🌐</div><h2 class="text-xl">السحابة والربط</h2></div>
+            <div class="content-section">
+                <div class="badge">المفاهيم الذكية</div>
+                <a href="https://ar.m.wikipedia.org/wiki/%D8%A5%D9%86%D8%AA%D8%B1%D9%86%D8%AA_%D8%A7%D9%84%D8%A3%D8%B4%D9%8A%D8%A7%D8%A1" target="_blank" class="item-card" onmouseenter="startPreview(this, 'https://ar.m.wikipedia.org/wiki/%D8%A5%D9%86%D8%AA%D8%B1%D9%86%D8%AA_%D8%A7%D9%84%D8%A3%D8%B4%D9%8A%D8%A7%D8%A1')" onmouseleave="stopPreview(this)">
+                    <div class="flex items-center gap-3"><h3 class="text-sm font-bold text-white">الإنترنت الكلي (IoE)</h3></div>
+                    <p class="text-xs text-gray-300">ربط البيانات والعمليات والناس في شبكة واحدة متكاملة.</p>
+                    <div class="live-preview"></div>
+                </a>
+                <a href="https://ar.m.wikipedia.org/wiki/%D8%AD%D9%88%D8%B3%D8%A8%D8%A9_%D8%B3%D8%AD%D8%A7%D8%A8%D9%8A%D8%A9" target="_blank" class="item-card" onmouseenter="startPreview(this, 'https://ar.m.wikipedia.org/wiki/%D8%AD%D9%88%D8%B3%D8%A8%D8%A9_%D8%B3%D8%AD%D8%A7%D8%A8%D9%8A%D8%A9')" onmouseleave="stopPreview(this)">
+                    <div class="flex items-center gap-3"><h3 class="text-sm font-bold text-white">الحوسبة الضبابية</h3></div>
+                    <p class="text-xs text-gray-300">توزيع المعالجة بالقرب من المصدر لتقليل زمن الاستجابة في التحكم.</p>
+                    <div class="live-preview"></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Widget -->
+    <div id="chatbot-widget">
+        <div id="chatbot-window">
+            <div class="chat-header">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">🤖</div>
+                    <div>
+                        <h4 class="text-sm font-bold">مساعد نيكسوس</h4>
+                        <span class="text-[9px] text-blue-200">الوضع: ذكي/محلي</span>
+                    </div>
+                </div>
+                <button onclick="toggleChat()" class="hover:text-red-300">✕</button>
+            </div>
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="اسألني أي سؤال تقني...">
+                <button onclick="sendMessage()" class="bg-blue-600 p-2 rounded-lg text-white hover:bg-blue-500">
+                    <svg class="w-5 h-5 transform rotate-180" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+                </button>
+            </div>
+        </div>
+        <div class="chat-btn-toggle" onclick="toggleChat()">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 2a2 2 0 012 2v2a2 2 0 01-2 2 2 2 0 01-2-2V4a2 2 0 012-2zM5 10a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H7a2 2 0 01-2-2v-8zM9 13h.01M15 13h.01M9 17h6"></path>
+            </svg>
+        </div>
+    </div>
+
+    <footer class="bg-slate-900/95 text-center py-8 mt-20 border-t border-blue-500/30">
+        <p class="text-gray-500 text-sm">&copy; 2026 الشعبة المتميزة 3 | جميع الحقوق محفوظة</p>
+    </footer>
+
+    <script>
+        const apiKey = ""; 
+        let previewTimer;
+
+        // Local Knowledge Base for Offline/Local usage
+        const localAnswers = {
+            "iot": "إنترنت الأشياء (IoT) هو شبكة من الأجهزة الفيزيائية المتصلة بالإنترنت التي تتبادل البيانات لتحسين الكفاءة والتحكم الآلي.",
+            "arduino": "أردوينو هي منصة برمجية ومادية مفتوحة المصدر تستخدم لبناء المشاريع الإلكترونية التفاعلية بسهولة.",
+            "esp32": "ESP32 هو متحكم دقيق قوي يدعم الواي فاي والبلوتوث، وهو الخيار الأمثل لمشاريع إنترنت الأشياء المتقدمة.",
+            "cloud": "الحوسبة السحابية توفر مساحة تخزين ومعالجة للبيانات الضخمة التي تجمعها أجهزة إنترنت الأشياء.",
+            "sensors": "المستشعرات هي الحواس التي يستخدمها نظام IoT لجمع المعلومات مثل الحرارة، الرطوبة، والضغط.",
+            "بوابة": "البوابة أو Gateway هي الجهاز الذي يربط أجهزة الحوسبة المتضمنة بالشبكة السحابية."
+        };
+
+        const chatWin = document.getElementById('chatbot-window');
+        const chatMsgs = document.getElementById('chat-messages');
+        const chatInp = document.getElementById('chat-input');
+
+        function toggleChat() {
+            const isVisible = chatWin.style.display === 'flex';
+            chatWin.style.display = isVisible ? 'none' : 'flex';
+            if (!isVisible && chatMsgs.children.length === 0) {
+                addMessage("أهلاً بك! 👋 أنا مساعدك التقني. لقد فعلت وضع 'الاستجابة المضمونة' لخدمتك حتى لو تم تشغيل الملف محلياً. كيف أساعدك؟", 'bot');
+            }
+        }
+
+        async function sendMessage() {
+            const text = chatInp.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            chatInp.value = '';
+            const loaderId = addLoading();
+
+            try {
+                // Try API first
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: text }] }],
+                        systemInstruction: { parts: [{ text: "أنت مساعد ذكي في مطوية تقنية. لغتك العربية ودودة." }] }
+                    })
+                });
+
+                if (!response.ok) throw new Error('API Blocked/Local');
+                
+                const data = await response.json();
+                removeLoading(loaderId);
+                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                addMessage(reply, 'bot');
+            } catch (error) {
+                // Fallback to Local Knowledge Base if API fails (CORS or Offline)
+                console.warn('Falling back to local knowledge base...');
+                setTimeout(() => {
+                    removeLoading(loaderId);
+                    let localReply = "عذراً، المتصفح يمنع الاتصال بالخادم عند تشغيل الملف محلياً. إليك ما أعرفه عن استفسارك: ";
+                    
+                    let found = false;
+                    for (let key in localAnswers) {
+                        if (text.toLowerCase().includes(key)) {
+                            localReply += localAnswers[key];
+                            found = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!found) {
+                        localReply = "يبدو أنك تشغل المطوية كملف محلي، والمتصفح يمنع الاتصال المباشر بالذكاء الاصطناعي الخارجي لأسباب أمنية. \n\n نصيحة: لتفعيل الذكاء الاصطناعي الكامل، جرب رفع الملف على (GitHub Pages) أو استخدم إضافة (Live Server) في VS Code.";
+                    }
+                    
+                    addMessage(localReply, 'bot');
+                }, 800);
+            }
+        }
+
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender === 'bot' ? 'bot-msg' : 'user-msg'}`;
+            div.innerText = text;
+            chatMsgs.appendChild(div);
+            chatMsgs.scrollTop = chatMsgs.scrollHeight;
+        }
+
+        function addLoading() {
+            const id = 'ld-' + Date.now();
+            const div = document.createElement('div');
+            div.id = id; div.className = 'message bot-msg';
+            div.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+            chatMsgs.appendChild(div);
+            chatMsgs.scrollTop = chatMsgs.scrollHeight;
+            return id;
+        }
+
+        function removeLoading(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        chatInp.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+        function startPreview(element, url) {
+            const preview = element.querySelector('.live-preview');
+            clearTimeout(previewTimer);
+            previewTimer = setTimeout(() => {
+                if (!preview.querySelector('iframe')) {
+                    const ifr = document.createElement('iframe');
+                    ifr.src = url; ifr.loading = "lazy";
+                    preview.appendChild(ifr);
+                }
+            }, 400);
+        }
+        function stopPreview(element) { clearTimeout(previewTimer); }
+    </script>
+</body>
+</html>
